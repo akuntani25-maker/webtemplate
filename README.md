@@ -37,11 +37,11 @@ Lihat [`docs/07-folder-structure.md`](./docs/07-folder-structure.md) untuk rinci
 | 1 | Analisis, arsitektur, flowchart, ERD, DB design | ✅ Dokumen lengkap |
 | 2 | Struktur folder, Prisma schema, API design | ✅ Schema & desain lengkap |
 | 3 | Authentication (Argon2, JWT rotation, cookie) | ✅ Terimplementasi + test |
-| 4 | Admin Panel | 🚧 Endpoint & modul terstruktur (buildout lanjutan) |
+| 4 | Admin Panel (stats, produk, kategori, order, pembayaran, kupon, user, konten) | ✅ Backend + UI berjalan (build hijau) |
 | 5 | Frontend user (home, produk, SEO) | ✅ Scaffold berjalan (build hijau) |
 | 6 | Checkout | 🚧 Skema & alur siap (service buildout) |
 | 7 | Upload bukti transfer | 🚧 Skema & storage siap |
-| 8 | Verifikasi admin | 🚧 Alur & audit siap |
+| 8 | Verifikasi admin (approve/reject → License) | ✅ Terimplementasi + test |
 | 9 | Download digital (signed URL + kuota) | ✅ Terimplementasi |
 | 10 | Blog | 🚧 Skema lengkap |
 | 11 | SEO (meta, JSON-LD, sitemap, robots) | ✅ Terimplementasi |

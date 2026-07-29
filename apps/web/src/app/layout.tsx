@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from '@/providers';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -34,13 +32,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body>
-        <Providers>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
