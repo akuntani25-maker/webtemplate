@@ -1,0 +1,715 @@
+// ============================================================================
+// DigiTemplate Marketplace — Prisma Schema
+// PostgreSQL · UUID PK · timestamps · soft delete · relasi lengkap
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================ ENUMS =========================================
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DemoType {
+  WEBSITE
+  SPREADSHEET
+  EXCEL
+  CANVA
+  NOTION
+  PDF
+  IMAGE
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING
+  WAITING_PAYMENT
+  PAID
+  CANCELLED
+  EXPIRED
+  REFUNDED
+}
+
+enum InvoiceStatus {
+  WAITING_PAYMENT
+  PAID
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  MANUAL_TRANSFER
+  QRIS
+  GOPAY
+  OVO
+  DANA
+  SHOPEEPAY
+  BANK_TRANSFER
+}
+
+enum PaymentProofStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CouponType {
+  PERCENT
+  FIXED
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  SPAM
+}
+
+// ============================ IDENTITY ======================================
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role      @default(USER)
+  avatarUrl    String?
+  phone        String?
+  emailVerifiedAt DateTime?
+  lastLoginAt  DateTime?
+
+  refreshTokens RefreshToken[]
+  addresses     Address[]
+  orders        Order[]
+  reviews       Review[]
+  wishlist      WishlistItem[]
+  licenses      License[]
+  downloadLogs  DownloadLog[]
+  blogComments  BlogComment[]
+  auditLogs     AuditLog[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Hash dari refresh token (jangan simpan token mentah)
+  tokenHash   String    @unique
+  // Untuk rotasi & reuse detection
+  family      String
+  replacedBy  String?
+  revokedAt   DateTime?
+  userAgent   String?
+  ip          String?
+  expiresAt   DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([family])
+  @@map("refresh_tokens")
+}
+
+model Address {
+  id         String  @id @default(uuid())
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String?
+  recipient  String
+  phone      String
+  line1      String
+  line2      String?
+  city       String
+  province   String
+  postalCode String
+  isDefault  Boolean @default(false)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+// ============================ CATALOG =======================================
+
+model Category {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  name        String
+  description String?
+  iconUrl     String?
+  imageUrl    String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+
+  parentId String?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+
+  products Product[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([parentId])
+  @@index([isActive])
+  @@map("categories")
+}
+
+model Tag {
+  id       String    @id @default(uuid())
+  slug     String    @unique
+  name     String
+  products Product[]
+
+  createdAt DateTime @default(now())
+
+  @@map("tags")
+}
+
+model Product {
+  id             String        @id @default(uuid())
+  slug           String        @unique
+  name           String
+  shortDesc      String?
+  description    String        @db.Text
+  features       String[]      // list fitur
+  specification  Json?         // spesifikasi key-value
+  status         ProductStatus @default(DRAFT)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  tags       Tag[]
+
+  // Media
+  thumbnailUrl String?
+  previewUrl   String?
+  videoUrl     String?
+  images       ProductImage[]
+  files        ProductFile[]
+
+  // Harga (integer, rupiah penuh)
+  price         Int
+  discountPrice Int?
+
+  // Demo
+  demoType DemoType @default(OTHER)
+  demoUrl  String?
+
+  // Metadata file
+  version      String?
+  fileFormat   String?
+  fileSizeBytes Int?
+  lastUpdatedAt DateTime?
+
+  // Statistik (denormalisasi untuk performa)
+  ratingAvg     Float @default(0)
+  ratingCount   Int   @default(0)
+  downloadCount Int   @default(0)
+  purchaseCount Int   @default(0)
+  viewCount     Int   @default(0)
+
+  // Flag tampilan
+  isFeatured  Boolean @default(false)
+  isBestSeller Boolean @default(false)
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  ogImageUrl      String?
+
+  faqs       ProductFaq[]
+  changelogs ProductChangelog[]
+  reviews    Review[]
+  orderItems OrderItem[]
+  wishlist   WishlistItem[]
+  licenses   License[]
+  banners    Banner[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status, categoryId])
+  @@index([createdAt])
+  @@index([ratingAvg])
+  @@index([purchaseCount])
+  @@index([isFeatured])
+  @@index([isBestSeller])
+  @@map("products")
+}
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("product_images")
+}
+
+// File digital privat (di R2). key = object key, JANGAN URL publik.
+model ProductFile {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label     String  // mis. "Main file", "Documentation"
+  storageKey String // object key di R2 (privat)
+  fileName  String
+  format    String?
+  sizeBytes Int?
+  version   String?
+
+  downloadLogs DownloadLog[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([productId])
+  @@map("product_files")
+}
+
+model ProductFaq {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  question  String
+  answer    String  @db.Text
+  sortOrder Int     @default(0)
+
+  @@index([productId])
+  @@map("product_faqs")
+}
+
+model ProductChangelog {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  version   String
+  notes     String   @db.Text
+  releasedAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("product_changelogs")
+}
+
+// ============================ COMMERCE ======================================
+
+model Coupon {
+  id            String     @id @default(uuid())
+  code          String     @unique
+  type          CouponType
+  value         Int        // persen (0-100) atau nominal
+  minPurchase   Int        @default(0)
+  maxDiscount   Int?       // batas potongan untuk tipe PERCENT
+  usageLimit    Int?       // total pemakaian
+  usedCount     Int        @default(0)
+  perUserLimit  Int?       // batas per user
+  startsAt      DateTime?
+  expiresAt     DateTime?
+  isActive      Boolean    @default(true)
+
+  orders Order[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([isActive, expiresAt])
+  @@map("coupons")
+}
+
+model Order {
+  id       String      @id @default(uuid())
+  number   String      @unique // mis. INV-20260729-0001
+  userId   String
+  user     User        @relation(fields: [userId], references: [id])
+  status   OrderStatus @default(WAITING_PAYMENT)
+
+  subtotal      Int
+  discountTotal Int @default(0)
+  grandTotal    Int
+
+  couponId String?
+  coupon   Coupon? @relation(fields: [couponId], references: [id])
+
+  customerEmail String
+  customerName  String
+  notes         String?
+
+  items    OrderItem[]
+  invoice  Invoice?
+  licenses License[]
+
+  paidAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId, status])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  // Snapshot harga saat beli
+  productName String
+  unitPrice   Int
+  quantity    Int    @default(1)
+  lineTotal   Int
+
+  license License?
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  number        String        @unique
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  paymentMethod PaymentMethod @default(MANUAL_TRANSFER)
+  status        InvoiceStatus @default(WAITING_PAYMENT)
+  amount        Int
+  // Instruksi pembayaran (nomor rekening / QRIS payload) — snapshot
+  paymentInstructions Json?
+  expiresAt     DateTime
+  paidAt        DateTime?
+
+  proofs PaymentProof[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status, expiresAt])
+  @@map("invoices")
+}
+
+model PaymentProof {
+  id        String             @id @default(uuid())
+  invoiceId String
+  invoice   Invoice            @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  status    PaymentProofStatus @default(PENDING)
+
+  // Bukti transfer (di R2, privat)
+  storageKey   String
+  senderName   String?
+  senderBank   String?
+  amount       Int?
+  transferredAt DateTime?
+  note         String?
+
+  reviewedById String?
+  reviewedAt   DateTime?
+  rejectReason String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([invoiceId, status])
+  @@map("payment_proofs")
+}
+
+// Lisensi = hak download atas satu item. Kuota terpisah per item.
+model License {
+  id           String  @id @default(uuid())
+  orderItemId  String  @unique
+  orderItem    OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User    @relation(fields: [userId], references: [id])
+  productId    String
+  product      Product @relation(fields: [productId], references: [id])
+
+  downloadCount Int     @default(0)
+  maxDownloads  Int     @default(5)
+  active        Boolean @default(true)
+
+  downloadLogs DownloadLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, productId])
+  @@index([active])
+  @@map("licenses")
+}
+
+model DownloadLog {
+  id          String  @id @default(uuid())
+  licenseId   String
+  license     License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  productFileId String
+  productFile ProductFile @relation(fields: [productFileId], references: [id])
+  userId      String
+  user        User    @relation(fields: [userId], references: [id])
+  ip          String?
+  userAgent   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([licenseId])
+  @@index([userId])
+  @@map("download_logs")
+}
+
+// ============================ SOCIAL ========================================
+
+model Review {
+  id        String       @id @default(uuid())
+  productId String
+  product   Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  rating    Int          // 1-5
+  comment   String?      @db.Text
+  images    String[]     // URL foto review
+  status    ReviewStatus @default(PUBLISHED)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([productId, userId]) // 1 review per user per produk
+  @@index([productId, status])
+  @@map("reviews")
+}
+
+model WishlistItem {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@map("wishlist_items")
+}
+
+// ============================ BLOG ==========================================
+
+model BlogCategory {
+  id    String     @id @default(uuid())
+  slug  String     @unique
+  name  String
+  posts BlogPost[]
+
+  createdAt DateTime @default(now())
+
+  @@map("blog_categories")
+}
+
+model BlogTag {
+  id    String     @id @default(uuid())
+  slug  String     @unique
+  name  String
+  posts BlogPost[]
+
+  createdAt DateTime @default(now())
+
+  @@map("blog_tags")
+}
+
+model BlogPost {
+  id          String     @id @default(uuid())
+  slug        String     @unique
+  title       String
+  excerpt     String?
+  content     String     @db.Text // HTML dari rich text editor (disanitasi)
+  coverUrl    String?
+  status      PostStatus @default(DRAFT)
+  authorName  String
+  readMinutes Int        @default(3)
+
+  categoryId String?
+  category   BlogCategory? @relation(fields: [categoryId], references: [id])
+  tags       BlogTag[]
+  comments   BlogComment[]
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  ogImageUrl      String?
+
+  viewCount   Int       @default(0)
+  publishedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@map("blog_posts")
+}
+
+model BlogComment {
+  id      String        @id @default(uuid())
+  postId  String
+  post    BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId  String?
+  user    User?         @relation(fields: [userId], references: [id])
+  authorName String
+  content String        @db.Text
+  status  CommentStatus @default(PENDING)
+
+  parentId String?
+  parent   BlogComment?  @relation("CommentTree", fields: [parentId], references: [id])
+  replies  BlogComment[] @relation("CommentTree")
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([postId, status])
+  @@map("blog_comments")
+}
+
+// ============================ CONTENT / CMS =================================
+
+model Banner {
+  id        String  @id @default(uuid())
+  title     String
+  subtitle  String?
+  imageUrl  String
+  linkUrl   String?
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  position  String   @default("HERO") // HERO, PROMO, SIDEBAR
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([position, isActive])
+  @@map("banners")
+}
+
+model Testimonial {
+  id        String  @id @default(uuid())
+  authorName String
+  authorRole String?
+  avatarUrl  String?
+  content   String  @db.Text
+  rating    Int     @default(5)
+  productId String?
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("testimonials")
+}
+
+model Faq {
+  id        String  @id @default(uuid())
+  question  String
+  answer    String  @db.Text
+  category  String? // grouping FAQ
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("faqs")
+}
+
+// Konfigurasi situs (key-value). SEO default, kontak, rekening bank, dsb.
+model SiteSetting {
+  id        String @id @default(uuid())
+  key       String @unique
+  value     Json
+  group     String @default("general")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// ============================ AUDIT =========================================
+
+model AuditLog {
+  id       String  @id @default(uuid())
+  userId   String?
+  user     User?   @relation(fields: [userId], references: [id])
+  action   String  // mis. AUTH_LOGIN, PAYMENT_VERIFY, DOWNLOAD
+  entity   String? // mis. Order
+  entityId String?
+  metadata Json?
+  ip       String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
