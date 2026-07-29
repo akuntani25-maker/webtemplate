@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 /**
  * Model yang menerapkan soft delete (punya kolom `deletedAt`).
@@ -29,7 +29,7 @@ const SOFT_DELETE_MODELS = new Set<string>([
  * Untuk mengakses record terhapus, gunakan query dengan `deletedAt` eksplisit,
  * atau method `$allRecords` (raw) sesuai kebutuhan admin.
  */
-export function softDeleteExtension(client: any) {
+export function softDeleteExtension(client: PrismaClient) {
   return client.$extends({
     name: 'soft-delete',
     query: {

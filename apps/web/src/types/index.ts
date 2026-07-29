@@ -25,6 +25,8 @@ export interface Product {
   ratingCount: number;
   downloadCount: number;
   purchaseCount: number;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
   category?: { slug: string; name: string };
 }
 
