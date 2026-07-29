@@ -9,9 +9,11 @@ import { TypedConfigService } from './config/typed-config.service';
 import { DatabaseModule } from './database/database.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { MediaModule } from './modules/media/media.module';
+import { NotificationModule } from './modules/notifications/notification.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { DownloadsModule } from './modules/downloads/downloads.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { HealthModule } from './modules/health/health.module';
 import { JobsModule } from './jobs/jobs.module';
 
@@ -41,10 +43,12 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     DatabaseModule,
     AuditModule,
     MediaModule,
+    NotificationModule,
 
     AuthModule,
     CatalogModule,
     DownloadsModule,
+    AdminModule,
     HealthModule,
     JobsModule,
   ],
