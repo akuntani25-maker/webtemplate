@@ -8,6 +8,11 @@ import { CurrentUser, type AuthUser } from '../../common/decorators';
 export class DownloadsController {
   constructor(private readonly downloads: DownloadsService) {}
 
+  @Get()
+  myLicenses(@CurrentUser() user: AuthUser) {
+    return this.downloads.myLicenses(user.sub);
+  }
+
   @Get(':licenseId/files')
   listFiles(
     @CurrentUser() user: AuthUser,

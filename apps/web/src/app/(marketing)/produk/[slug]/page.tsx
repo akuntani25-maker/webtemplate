@@ -4,6 +4,7 @@ import { serverFetch } from '@/lib/api';
 import { buildMetadata, productJsonLd, breadcrumbJsonLd } from '@/lib/seo';
 import { formatIDR } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { BuyButton } from '@/components/sections/buy-button';
 import type { Product } from '@/types';
 
 export const revalidate = 300;
@@ -93,8 +94,8 @@ export default async function ProductPage({
             )}
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button size="lg">Beli Sekarang</Button>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <BuyButton product={product} />
             {product.demoUrl && (
               <Button asChild size="lg" variant="outline">
                 <a href={product.demoUrl} target="_blank" rel="noreferrer">

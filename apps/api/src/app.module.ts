@@ -11,7 +11,10 @@ import { AuditModule } from './modules/audit/audit.module';
 import { MediaModule } from './modules/media/media.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { DownloadsModule } from './modules/downloads/downloads.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { HealthModule } from './modules/health/health.module';
@@ -46,7 +49,10 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     NotificationModule,
 
     AuthModule,
+    UsersModule,
     CatalogModule,
+    OrdersModule,
+    WishlistModule,
     DownloadsModule,
     AdminModule,
     HealthModule,

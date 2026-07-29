@@ -24,6 +24,29 @@ export class DownloadsService {
     private readonly audit: AuditService,
   ) {}
 
+  /** Daftar lisensi (produk yang bisa diunduh) milik user. */
+  async myLicenses(userId: string) {
+    const licenses = await this.prisma.db.license.findMany({
+      where: { userId, active: true },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        product: {
+          select: { name: true, slug: true, thumbnailUrl: true },
+        },
+      },
+    });
+    return {
+      data: licenses.map((l) => ({
+        id: l.id,
+        product: l.product,
+        downloadCount: l.downloadCount,
+        maxDownloads: l.maxDownloads,
+        remaining: Math.max(0, l.maxDownloads - l.downloadCount),
+        createdAt: l.createdAt,
+      })),
+    };
+  }
+
   /** Daftar file yang tersedia untuk sebuah license milik user. */
   async listFiles(userId: string, licenseId: string) {
     const license = await this.getOwnedLicense(userId, licenseId);
