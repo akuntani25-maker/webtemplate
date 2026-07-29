@@ -39,8 +39,8 @@ Lihat [`docs/07-folder-structure.md`](./docs/07-folder-structure.md) untuk rinci
 | 3 | Authentication (Argon2, JWT rotation, cookie) | ✅ Terimplementasi + test |
 | 4 | Admin Panel (stats, produk, kategori, order, pembayaran, kupon, user, konten) | ✅ Backend + UI berjalan (build hijau) |
 | 5 | Frontend user (home, produk, SEO) | ✅ Scaffold berjalan (build hijau) |
-| 6 | Checkout | 🚧 Skema & alur siap (service buildout) |
-| 7 | Upload bukti transfer | 🚧 Skema & storage siap |
+| 6 | Checkout (cart, kupon, order+invoice) | ✅ Terimplementasi + test |
+| 7 | Upload bukti transfer (presign R2) | ✅ Terimplementasi |
 | 8 | Verifikasi admin (approve/reject → License) | ✅ Terimplementasi + test |
 | 9 | Download digital (signed URL + kuota) | ✅ Terimplementasi |
 | 10 | Blog | 🚧 Skema lengkap |
@@ -53,7 +53,10 @@ Lihat [`docs/07-folder-structure.md`](./docs/07-folder-structure.md) untuk rinci
 ✅ = berjalan/terverifikasi · 🚧 = fondasi (schema, kontrak API, modul) tersedia,
 logika bisnis lanjutan mengikuti pola yang sudah ada.
 
-Backend **build + lint + test hijau**; frontend **typecheck + build hijau**.
+Alur beli **end-to-end** sudah lengkap: jelajah produk → keranjang → checkout
+(kupon) → invoice → upload bukti transfer → verifikasi admin → download aman.
+
+Backend **build + lint + test hijau** (8 test); frontend **build hijau** (23 route).
 
 ## Menjalankan Secara Lokal
 
