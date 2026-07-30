@@ -63,6 +63,8 @@ jobs:
         run: npm run prisma:generate
       - name: Typecheck Web
         run: npm --workspace @digitemplate/web run typecheck
+      - name: Lint Web
+        run: npm run lint:web
       - name: Build Web
         env:
           NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1

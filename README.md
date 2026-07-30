@@ -11,7 +11,7 @@ marketplace berskala besar.
 
 | Layer | Teknologi |
 |-------|-----------|
-| Frontend | Next.js (App Router) · React · TypeScript · TailwindCSS · Shadcn-style UI · Framer Motion · React Hook Form · Zod · TanStack Query · Axios |
+| Frontend | Next.js 16 (App Router, Turbopack) · React 19 · TypeScript · TailwindCSS · Shadcn-style UI · Framer Motion · React Hook Form · Zod · TanStack Query · Axios |
 | Backend | NestJS · TypeScript · Prisma ORM |
 | Database | PostgreSQL (Supabase) |
 | Auth | JWT + Refresh Token (rotasi & reuse detection) · HttpOnly Cookie · Argon2id |
@@ -56,7 +56,16 @@ logika bisnis lanjutan mengikuti pola yang sudah ada.
 Alur beli **end-to-end** sudah lengkap: jelajah produk → keranjang → checkout
 (kupon) → invoice → upload bukti transfer → verifikasi admin → download aman.
 
-Backend **build + lint + test hijau** (8 test); frontend **build hijau** (23 route).
+Backend **build + lint + test hijau** (8 test); frontend **lint + build hijau** (22 route).
+
+### Catatan Next.js 16 / React 19
+
+- `params` pada halaman dinamis adalah **Promise**: `await params` di Server
+  Component, `use(params)` di Client Component.
+- `next lint` sudah dihapus — lint memakai **ESLint flat config**
+  (`apps/web/eslint.config.mjs`), dijalankan via `npm run lint:web`.
+- Root `package.json` memakai `overrides` untuk memaksa `@types/react@19`
+  (Radix UI masih menarik v18 secara transitif → tipe React terduplikasi).
 
 ## Menjalankan Secara Lokal
 

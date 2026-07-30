@@ -17,9 +17,11 @@ const schema = z.object({
   description: z.string().min(10, 'Deskripsi minimal 10 karakter'),
   price: z.coerce.number().int().min(0),
   discountPrice: z.coerce.number().int().min(0).optional().or(z.literal(0)),
-  demoType: z.string().default('OTHER'),
+  // Tanpa .default() agar tipe input == output (syarat resolver v5);
+  // nilai awal disuplai lewat defaultValues di useForm.
+  demoType: z.string(),
   demoUrl: z.string().url('URL tidak valid').optional().or(z.literal('')),
-  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
 });
 
 type FormValues = z.infer<typeof schema>;

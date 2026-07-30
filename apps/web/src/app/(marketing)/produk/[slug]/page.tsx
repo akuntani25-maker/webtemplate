@@ -19,12 +19,14 @@ async function getProduct(slug: string): Promise<Product | null> {
   }
 }
 
+// Next.js 15+: `params` adalah Promise dan harus di-await.
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const product = await getProduct(params.slug);
+  const { slug } = await params;
+  const product = await getProduct(slug);
   if (!product) return { title: 'Produk tidak ditemukan' };
   return buildMetadata({
     title: product.metaTitle ?? product.name,
@@ -40,9 +42,10 @@ export async function generateMetadata({
 export default async function ProductPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const product = await getProduct(params.slug);
+  const { slug } = await params;
+  const product = await getProduct(slug);
   if (!product) notFound();
 
   const jsonLd = productJsonLd(product);

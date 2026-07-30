@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 export interface CartItem {
   productId: string;
@@ -13,43 +13,63 @@ export interface CartItem {
 
 const KEY = 'digitemplate.cart';
 const EVENT = 'cart:changed';
+const EMPTY: CartItem[] = [];
 
-function read(): CartItem[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '[]');
-  } catch {
-    return [];
+/**
+ * Cache snapshot agar `getSnapshot` mengembalikan referensi stabil.
+ * Tanpa ini, JSON.parse membuat array baru setiap render → render tak berujung.
+ */
+let cachedRaw: string | null = null;
+let cachedItems: CartItem[] = EMPTY;
+
+function getSnapshot(): CartItem[] {
+  const raw = localStorage.getItem(KEY) ?? '[]';
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    try {
+      const parsed = JSON.parse(raw);
+      cachedItems = Array.isArray(parsed) ? parsed : EMPTY;
+    } catch {
+      cachedItems = EMPTY;
+    }
   }
+  return cachedItems;
 }
 
-function write(items: CartItem[]) {
+function getServerSnapshot(): CartItem[] {
+  return EMPTY;
+}
+
+function subscribe(onChange: () => void): () => void {
+  window.addEventListener(EVENT, onChange);
+  // Sinkron antar tab
+  window.addEventListener('storage', onChange);
+  return () => {
+    window.removeEventListener(EVENT, onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+function write(items: CartItem[]): void {
   localStorage.setItem(KEY, JSON.stringify(items));
   window.dispatchEvent(new Event(EVENT));
 }
 
 /**
- * Keranjang sederhana berbasis localStorage (produk digital → qty 1 default).
- * Cukup untuk MVP tanpa server-side cart.
+ * Keranjang berbasis localStorage (produk digital → qty 1 default),
+ * dibaca lewat useSyncExternalStore agar konsisten & aman saat SSR.
  */
 export function useCart() {
-  const [items, setItems] = useState<CartItem[]>([]);
-
-  useEffect(() => {
-    setItems(read());
-    const handler = () => setItems(read());
-    window.addEventListener(EVENT, handler);
-    return () => window.removeEventListener(EVENT, handler);
-  }, []);
+  const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const add = useCallback((item: Omit<CartItem, 'quantity'>) => {
-    const current = read();
-    if (current.find((i) => i.productId === item.productId)) return;
+    const current = getSnapshot();
+    if (current.some((i) => i.productId === item.productId)) return;
     write([...current, { ...item, quantity: 1 }]);
   }, []);
 
   const remove = useCallback((productId: string) => {
-    write(read().filter((i) => i.productId !== productId));
+    write(getSnapshot().filter((i) => i.productId !== productId));
   }, []);
 
   const clear = useCallback(() => write([]), []);
