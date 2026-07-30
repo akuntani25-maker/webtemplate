@@ -1,0 +1,65 @@
+{
+  // ---- TypeScript ----
+  // Pakai TypeScript dari repo, bukan versi bawaan VS Code (hindari beda hasil).
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  // ---- ESLint (flat config, satu versi untuk kedua app) ----
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [
+    { "directory": "apps/api", "changeProcessCWD": true },
+    { "directory": "apps/web", "changeProcessCWD": true }
+  ],
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ---- Format ----
+  // formatOnSave sengaja OFF agar tidak mengubah file lama tanpa diminta.
+  // Aktifkan setelah menjalankan `npm run format` sekali. Shift+Alt+F tetap jalan.
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[prisma]": { "editor.defaultFormatter": "Prisma.prisma" },
+
+  // ---- Tailwind ----
+  // Autocomplete kelas Tailwind di dalam cn()/cva()/clsx()
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["clsx\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+  "tailwindCSS.classAttributes": ["class", "className", "classList"],
+  "css.validate": false,
+
+  // ---- Files / search ----
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/.next": true,
+    "**/dist": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/package-lock.json": true,
+    "apps/api/.storage": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  // ---- Terminal ----
+  // Sesuaikan bila memakai PowerShell/Git Bash di Windows.
+  "terminal.integrated.cwd": "${workspaceFolder}"
+}

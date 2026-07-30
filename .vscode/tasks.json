@@ -1,0 +1,116 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev: api + web",
+      "detail": "Jalankan backend (4000) dan frontend (3000) sekaligus",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated", "group": "dev" },
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "dev: api (debug)",
+      "detail": "NestJS watch + inspector di port 9229 (dipakai launch 'Attach: API')",
+      "type": "shell",
+      "command": "npm run start:dev -- --debug 0.0.0.0:9229",
+      "options": { "cwd": "${workspaceFolder}/apps/api" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "fileLocation": "relative",
+        "pattern": {
+          "regexp": "^(.*)\\((\\d+),(\\d+)\\): (error|warning) (TS\\d+): (.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "(Starting compilation|File change detected)",
+          "endsPattern": "(Nest application successfully started|Found 0 errors)"
+        }
+      },
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "dev: web",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/apps/web" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "check: all (typecheck + lint + test)",
+      "detail": "Jalankan sebelum commit",
+      "type": "shell",
+      "command": "npm run typecheck && npm run lint && npm run test",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": ["$tsc"],
+      "group": { "kind": "test", "isDefault": true }
+    },
+    {
+      "label": "test: api (watch)",
+      "type": "shell",
+      "command": "npx jest --watch",
+      "options": { "cwd": "${workspaceFolder}/apps/api" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "prisma: generate",
+      "type": "shell",
+      "command": "npm run prisma:generate",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "prisma: migrate dev",
+      "type": "shell",
+      "command": "npm run prisma:migrate",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "prisma: seed",
+      "type": "shell",
+      "command": "npm run prisma:seed",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "prisma: studio",
+      "detail": "GUI database di http://localhost:5555",
+      "type": "shell",
+      "command": "npm --workspace @digitemplate/api run prisma:studio",
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "db: up (docker)",
+      "detail": "Jalankan PostgreSQL lokal via Docker",
+      "type": "shell",
+      "command": "docker compose up -d db",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "format: write",
+      "type": "shell",
+      "command": "npm run format",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    }
+  ]
+}

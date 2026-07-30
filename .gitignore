@@ -31,8 +31,12 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 .idea/
+# VS Code: konfigurasi tim di-commit, preferensi pribadi tidak
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # Test / coverage
 coverage/

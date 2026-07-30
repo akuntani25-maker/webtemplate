@@ -1,0 +1,147 @@
+# =============================================================================
+# Uji API langsung dari VS Code — butuh ekstensi REST Client (humao.rest-client).
+# Klik "Send Request" di atas tiap blok. Cookie auth otomatis tersimpan.
+#
+# Urutan alur beli lengkap: 1 → 2 → 5 → 6 → 8 → 9 → 11 → 13 → 14
+# =============================================================================
+
+@base = http://localhost:4000/api/v1
+
+### 0. Health check
+GET {{base}}/health/ready
+
+### 1. Registrasi user baru
+# @name register
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "buyer@test.id",
+  "name": "Buyer Test",
+  "password": "Passw0rdAman"
+}
+
+### 2. Login (cookie access + refresh diset otomatis)
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "buyer@test.id",
+  "password": "Passw0rdAman"
+}
+
+### 3. Profil user saat ini
+GET {{base}}/auth/me
+
+### 4. Rotasi token
+POST {{base}}/auth/refresh
+
+### 5. Daftar produk (publik) — ambil satu productId untuk checkout
+# @name products
+GET {{base}}/products?limit=5
+
+### 6. Checkout
+# Ganti productId dengan hasil dari request #5.
+# @name checkout
+POST {{base}}/orders/checkout
+Content-Type: application/json
+
+{
+  "items": [{ "productId": "GANTI-DENGAN-PRODUCT-ID" }],
+  "customerName": "Buyer Test",
+  "customerEmail": "buyer@test.id",
+  "paymentMethod": "MANUAL_TRANSFER"
+}
+
+### 7. Validasi kupon
+POST {{base}}/coupons/validate
+Content-Type: application/json
+
+{ "code": "HEMAT20", "subtotal": 150000 }
+
+### 8. Detail invoice (nomor dari hasil #6: data.invoice.number)
+@invoice = GANTI-DENGAN-INVOICE-NUMBER
+GET {{base}}/invoices/{{invoice}}
+
+### 9. Minta URL upload bukti transfer
+# @name presign
+POST {{base}}/invoices/{{invoice}}/proof/presign
+Content-Type: application/json
+
+{ "fileName": "bukti-transfer.png", "contentType": "image/png" }
+
+### 10. Daftarkan bukti transfer (storageKey dari hasil #9)
+# Catatan: unggah file-nya dulu dengan PUT ke uploadUrl (mis. dari browser/frontend).
+POST {{base}}/invoices/{{invoice}}/proof
+Content-Type: application/json
+
+{
+  "storageKey": "GANTI-DENGAN-STORAGE-KEY",
+  "senderName": "Buyer Test"
+}
+
+### 11. [ADMIN] Daftar bukti menunggu verifikasi
+# Butuh akun ADMIN (seed: admin@digitemplate.id / Admin#12345)
+GET {{base}}/admin/payments?status=PENDING
+
+### 12. [ADMIN] Login admin
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@digitemplate.id",
+  "password": "Admin#12345"
+}
+
+### 13. [ADMIN] Setujui pembayaran (proofId dari #11)
+POST {{base}}/admin/payments/GANTI-DENGAN-PROOF-ID/approve
+
+### 14. Daftar lisensi (produk yang bisa diunduh)
+# @name licenses
+GET {{base}}/downloads
+
+### 15. File dalam sebuah lisensi
+GET {{base}}/downloads/GANTI-DENGAN-LICENSE-ID/files
+
+### 16. Terbitkan signed URL unduh (berlaku 10 menit, maks 5x)
+POST {{base}}/downloads/GANTI-DENGAN-LICENSE-ID/files/GANTI-DENGAN-FILE-ID/sign
+
+### 17. [ADMIN] Statistik dashboard
+GET {{base}}/admin/stats/overview
+
+### 18. [ADMIN] Grafik penjualan 30 hari
+GET {{base}}/admin/stats/sales?range=30
+
+### 19. [ADMIN] Buat kategori
+POST {{base}}/admin/categories
+Content-Type: application/json
+
+{ "name": "Template POS", "sortOrder": 5 }
+
+### 20. [ADMIN] Buat produk
+POST {{base}}/admin/products
+Content-Type: application/json
+
+{
+  "name": "Template Invoice Modern",
+  "categoryId": "GANTI-DENGAN-CATEGORY-ID",
+  "description": "Deskripsi lengkap template invoice modern.",
+  "shortDesc": "Invoice otomatis untuk UMKM.",
+  "price": 120000,
+  "discountPrice": 89000,
+  "demoType": "PDF",
+  "status": "PUBLISHED"
+}
+
+### 21. Wishlist — tambah
+POST {{base}}/wishlist
+Content-Type: application/json
+
+{ "productId": "GANTI-DENGAN-PRODUCT-ID" }
+
+### 22. Wishlist — lihat
+GET {{base}}/wishlist
+
+### 23. Logout
+POST {{base}}/auth/logout

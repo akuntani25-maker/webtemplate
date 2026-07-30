@@ -9,15 +9,15 @@ marketplace berskala besar.
 
 ## Tech Stack
 
-| Layer | Teknologi |
-|-------|-----------|
+| Layer    | Teknologi                                                                                                                                                   |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Frontend | Next.js 16 (App Router, Turbopack) · React 19 · TypeScript · TailwindCSS · Shadcn-style UI · Framer Motion · React Hook Form · Zod · TanStack Query · Axios |
-| Backend | NestJS · TypeScript · Prisma ORM |
-| Database | PostgreSQL (Supabase) |
-| Auth | JWT + Refresh Token (rotasi & reuse detection) · HttpOnly Cookie · Argon2id |
-| Storage | Cloudflare R2 (privat, signed URL) — otomatis fallback ke **disk lokal** saat pengembangan, tanpa perlu akun Cloudflare |
-| Deploy | Vercel (web) · Railway (api) · Supabase (db) · Cloudflare (DNS/SSL) |
-| CI/CD | GitHub Actions |
+| Backend  | NestJS · TypeScript · Prisma ORM                                                                                                                            |
+| Database | PostgreSQL (Supabase)                                                                                                                                       |
+| Auth     | JWT + Refresh Token (rotasi & reuse detection) · HttpOnly Cookie · Argon2id                                                                                 |
+| Storage  | Cloudflare R2 (privat, signed URL) — otomatis fallback ke **disk lokal** saat pengembangan, tanpa perlu akun Cloudflare                                     |
+| Deploy   | Vercel (web) · Railway (api) · Supabase (db) · Cloudflare (DNS/SSL)                                                                                         |
+| CI/CD    | GitHub Actions                                                                                                                                              |
 
 ## Struktur Monorepo
 
@@ -32,23 +32,23 @@ Lihat [`docs/07-folder-structure.md`](./docs/07-folder-structure.md) untuk rinci
 
 ## Status Implementasi (per tahap)
 
-| Tahap | Cakupan | Status |
-|-------|---------|--------|
-| 1 | Analisis, arsitektur, flowchart, ERD, DB design | ✅ Dokumen lengkap |
-| 2 | Struktur folder, Prisma schema, API design | ✅ Schema & desain lengkap |
-| 3 | Authentication (Argon2, JWT rotation, cookie) | ✅ Terimplementasi + test |
-| 4 | Admin Panel (stats, produk, kategori, order, pembayaran, kupon, user, konten) | ✅ Backend + UI berjalan (build hijau) |
-| 5 | Frontend user (home, produk, SEO) | ✅ Scaffold berjalan (build hijau) |
-| 6 | Checkout (cart, kupon, order+invoice) | ✅ Terimplementasi + test |
-| 7 | Upload bukti transfer (presign R2) | ✅ Terimplementasi |
-| 8 | Verifikasi admin (approve/reject → License) | ✅ Terimplementasi + test |
-| 9 | Download digital (signed URL + kuota) | ✅ Terimplementasi |
-| 10 | Blog | 🚧 Skema lengkap |
-| 11 | SEO (meta, JSON-LD, sitemap, robots) | ✅ Terimplementasi |
-| 12 | Testing | ✅ Unit test auth + pola test |
-| 13 | Docker | ✅ Dockerfile + compose |
-| 14 | CI/CD | ✅ GitHub Actions |
-| 15 | Deployment | ✅ Panduan lengkap |
+| Tahap | Cakupan                                                                       | Status                                 |
+| ----- | ----------------------------------------------------------------------------- | -------------------------------------- |
+| 1     | Analisis, arsitektur, flowchart, ERD, DB design                               | ✅ Dokumen lengkap                     |
+| 2     | Struktur folder, Prisma schema, API design                                    | ✅ Schema & desain lengkap             |
+| 3     | Authentication (Argon2, JWT rotation, cookie)                                 | ✅ Terimplementasi + test              |
+| 4     | Admin Panel (stats, produk, kategori, order, pembayaran, kupon, user, konten) | ✅ Backend + UI berjalan (build hijau) |
+| 5     | Frontend user (home, produk, SEO)                                             | ✅ Scaffold berjalan (build hijau)     |
+| 6     | Checkout (cart, kupon, order+invoice)                                         | ✅ Terimplementasi + test              |
+| 7     | Upload bukti transfer (presign R2)                                            | ✅ Terimplementasi                     |
+| 8     | Verifikasi admin (approve/reject → License)                                   | ✅ Terimplementasi + test              |
+| 9     | Download digital (signed URL + kuota)                                         | ✅ Terimplementasi                     |
+| 10    | Blog                                                                          | 🚧 Skema lengkap                       |
+| 11    | SEO (meta, JSON-LD, sitemap, robots)                                          | ✅ Terimplementasi                     |
+| 12    | Testing                                                                       | ✅ Unit test auth + pola test          |
+| 13    | Docker                                                                        | ✅ Dockerfile + compose                |
+| 14    | CI/CD                                                                         | ✅ GitHub Actions                      |
+| 15    | Deployment                                                                    | ✅ Panduan lengkap                     |
 
 ✅ = berjalan/terverifikasi · 🚧 = fondasi (schema, kontrak API, modul) tersedia,
 logika bisnis lanjutan mengikuti pola yang sudah ada.
@@ -70,19 +70,23 @@ Backend **build + lint + test hijau** (8 test); frontend **lint + build hijau** 
 ## Menjalankan Secara Lokal
 
 ### Prasyarat
+
 - Node.js ≥ 20, npm ≥ 10
 - PostgreSQL 16 (atau `docker compose up -d db`)
 
 ### 1. Install
+
 ```bash
 npm install            # workspaces: api + web sekaligus
 ```
+
 > `npm install` otomatis menjalankan `prisma generate` (script `postinstall` di
 > `apps/api`). Tanpa client hasil generate, TypeScript akan melaporkan puluhan
 > error `@prisma/client has no exported member ...` — lihat
 > [`docs/troubleshooting.md`](./docs/troubleshooting.md#1-ratusan-error-typescript-menyebut-prismaclient).
 
 ### 2. Konfigurasi environment
+
 ```bash
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env.local
@@ -91,42 +95,48 @@ cp apps/web/.env.example apps/web/.env.local
 ```
 
 ### 3. Database
+
 ```bash
 npm run prisma:generate        # otomatis via postinstall; jalankan lagi bila schema berubah
 npm run prisma:migrate         # buat & terapkan migrasi
 npm run prisma:seed            # data awal (admin, kategori, contoh produk)
 ```
+
 Admin default: `admin@digitemplate.id` / `Admin#12345` (ganti di produksi).
 
 ### 4. Jalankan
+
 ```bash
 npm run dev                    # api (4000) + web (3000) paralel
 ```
+
 - Web: http://localhost:3000
 - API: http://localhost:4000/api/v1
 - Health: http://localhost:4000/api/v1/health/ready
 
 ### Dengan Docker
+
 ```bash
 docker compose up -d           # db + api + web
 ```
 
 ## Skrip Penting (root)
 
-| Perintah | Fungsi |
-|----------|--------|
-| `npm run dev` | Jalankan api + web (dev) |
-| `npm run build` | Build keduanya |
-| `npm run lint` | Lint keduanya |
-| `npm run test` | Unit test API |
-| `npm run prisma:migrate` | Migrasi Prisma |
-| `npm run prisma:seed` | Seed database |
+| Perintah                 | Fungsi                   |
+| ------------------------ | ------------------------ |
+| `npm run dev`            | Jalankan api + web (dev) |
+| `npm run build`          | Build keduanya           |
+| `npm run lint`           | Lint keduanya            |
+| `npm run test`           | Unit test API            |
+| `npm run prisma:migrate` | Migrasi Prisma           |
+| `npm run prisma:seed`    | Seed database            |
 
 ## Dokumentasi
 
 - Tahap 1–2: [`01`](./docs/01-requirements-analysis.md) · [`02`](./docs/02-architecture.md) · [`03`](./docs/03-flowchart.md) · [`04`](./docs/04-erd.md) · [`05`](./docs/05-database-design.md) · [`06`](./docs/06-api-design.md) · [`07`](./docs/07-folder-structure.md)
 - Operasional: [`deployment`](./docs/deployment.md) · [`operations`](./docs/operations.md) (backup/restore/migrasi) · [`guides`](./docs/guides.md) (tambah produk, upload file, kategori, blog)
-- **[`troubleshooting`](./docs/troubleshooting.md)** — error umum & solusinya (Prisma belum generate, tipe React bentrok, `next lint`, Windows/argon2)
+- **[`vscode-setup`](./docs/vscode-setup.md)** — panduan pengembangan di VS Code (ekstensi, task, debugging breakpoint, uji API dari editor)
+- **[`troubleshooting`](./docs/troubleshooting.md)** — error umum & solusinya (Prisma belum generate, storage R2, tipe React bentrok, `next lint`, Windows/argon2)
 - Keamanan: [`security`](./docs/security.md)
 
 ## Keamanan (ringkas)

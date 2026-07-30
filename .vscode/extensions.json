@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "prisma.prisma",
+    "bradlc.vscode-tailwindcss",
+    "christian-kohler.path-intellisense",
+    "usernamehw.errorlens",
+    "humao.rest-client",
+    "eamodio.gitlens"
+  ]
+}
