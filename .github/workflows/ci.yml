@@ -41,6 +41,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Prisma generate
         run: npm run prisma:generate
+      - name: Typecheck API
+        run: npm --workspace @digitemplate/api run typecheck
       - name: Lint API
         run: npm run lint:api
       - name: Test API

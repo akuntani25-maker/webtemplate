@@ -77,6 +77,10 @@ Backend **build + lint + test hijau** (8 test); frontend **lint + build hijau** 
 ```bash
 npm install            # workspaces: api + web sekaligus
 ```
+> `npm install` otomatis menjalankan `prisma generate` (script `postinstall` di
+> `apps/api`). Tanpa client hasil generate, TypeScript akan melaporkan puluhan
+> error `@prisma/client has no exported member ...` — lihat
+> [`docs/troubleshooting.md`](./docs/troubleshooting.md#1-ratusan-error-typescript-menyebut-prismaclient).
 
 ### 2. Konfigurasi environment
 ```bash
@@ -87,7 +91,7 @@ cp apps/web/.env.example apps/web/.env.local
 
 ### 3. Database
 ```bash
-npm run prisma:generate
+npm run prisma:generate        # otomatis via postinstall; jalankan lagi bila schema berubah
 npm run prisma:migrate         # buat & terapkan migrasi
 npm run prisma:seed            # data awal (admin, kategori, contoh produk)
 ```
@@ -121,6 +125,7 @@ docker compose up -d           # db + api + web
 
 - Tahap 1–2: [`01`](./docs/01-requirements-analysis.md) · [`02`](./docs/02-architecture.md) · [`03`](./docs/03-flowchart.md) · [`04`](./docs/04-erd.md) · [`05`](./docs/05-database-design.md) · [`06`](./docs/06-api-design.md) · [`07`](./docs/07-folder-structure.md)
 - Operasional: [`deployment`](./docs/deployment.md) · [`operations`](./docs/operations.md) (backup/restore/migrasi) · [`guides`](./docs/guides.md) (tambah produk, upload file, kategori, blog)
+- **[`troubleshooting`](./docs/troubleshooting.md)** — error umum & solusinya (Prisma belum generate, tipe React bentrok, `next lint`, Windows/argon2)
 - Keamanan: [`security`](./docs/security.md)
 
 ## Keamanan (ringkas)
