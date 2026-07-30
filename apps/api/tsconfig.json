@@ -11,8 +11,15 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "outDir": "./dist",
+    // rootDir dikunci ke src agar output = dist/main.js (bukan dist/src/main.js).
+    // prisma/seed.ts dijalankan via ts-node, di-typecheck lewat tsconfig.typecheck.json.
+    "rootDir": "./src",
     "baseUrl": "./",
+    // Cache inkremental disimpan DI DALAM dist agar siklus hidupnya sejalan
+    // dengan output. Bila di luar dist, menghapus dist membuat build "sukses"
+    // tanpa menghasilkan file (cache mengira output masih ada).
     "incremental": true,
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
@@ -24,6 +31,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "prisma/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

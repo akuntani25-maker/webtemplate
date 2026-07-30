@@ -1,90 +1,110 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  S3Client,
-  GetObjectCommand,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { createHmac } from 'crypto';
 import { TypedConfigService } from '../../config/typed-config.service';
+import type { StorageDriver } from './storage.driver';
+import { R2Driver } from './drivers/r2.driver';
+import { LocalDiskDriver } from './drivers/local-disk.driver';
 
 /**
- * Abstraksi object storage (Cloudflare R2 — S3-compatible).
+ * Abstraksi object storage.
  *
- * File digital disimpan privat. Akses download HANYA lewat signed URL
- * berumur pendek (default 10 menit). Upload dari admin memakai presigned PUT.
+ * Driver dipilih otomatis (`STORAGE_DRIVER=auto`):
+ *  - **r2** bila kredensial Cloudflare R2 lengkap → dipakai di produksi.
+ *  - **local** bila belum → filesystem, agar pengembangan lokal jalan tanpa
+ *    akun cloud. Tetap memakai URL bertanda tangan berumur pendek.
+ *
+ * File digital & bukti transfer selalu privat: akses hanya lewat signed URL.
  */
 @Injectable()
 export class StorageService {
   private readonly logger = new Logger(StorageService.name);
-  private readonly client: S3Client | null;
-  private readonly bucket: string;
+  private readonly driver: StorageDriver;
 
   constructor(private readonly config: TypedConfigService) {
-    this.bucket = this.config.get('R2_BUCKET');
-    const endpoint = this.config.get('R2_ENDPOINT');
-    const accessKeyId = this.config.get('R2_ACCESS_KEY_ID');
-    const secretAccessKey = this.config.get('R2_SECRET_ACCESS_KEY');
-
-    if (endpoint && accessKeyId && secretAccessKey) {
-      this.client = new S3Client({
-        region: 'auto',
-        endpoint,
-        credentials: { accessKeyId, secretAccessKey },
-      });
-    } else {
-      this.client = null;
-      this.logger.warn(
-        'R2 belum dikonfigurasi — signed URL akan gagal sampai env diisi.',
+    this.driver = this.createDriver();
+    this.logger.log(`Object storage driver: ${this.driver.name}`);
+    if (this.driver.name === 'local' && this.config.isProd) {
+      this.logger.error(
+        'PERINGATAN: driver penyimpanan lokal aktif di produksi. ' +
+          'File tidak persisten/terbagi antar instance — konfigurasikan R2.',
       );
     }
   }
 
-  private ensure(): S3Client {
-    if (!this.client) {
-      throw new Error('Object storage (R2) belum dikonfigurasi');
+  private createDriver(): StorageDriver {
+    const requested = this.config.get('STORAGE_DRIVER');
+    const endpoint = this.config.get('R2_ENDPOINT');
+    const accessKeyId = this.config.get('R2_ACCESS_KEY_ID');
+    const secretAccessKey = this.config.get('R2_SECRET_ACCESS_KEY');
+    const r2Ready = Boolean(endpoint && accessKeyId && secretAccessKey);
+
+    if (requested === 'r2' && !r2Ready) {
+      throw new Error(
+        'STORAGE_DRIVER=r2 tetapi R2_ENDPOINT / R2_ACCESS_KEY_ID / ' +
+          'R2_SECRET_ACCESS_KEY belum lengkap.',
+      );
     }
-    return this.client;
+
+    if (requested === 'r2' || (requested === 'auto' && r2Ready)) {
+      return new R2Driver(this.config.get('R2_BUCKET'), {
+        endpoint: endpoint!,
+        accessKeyId: accessKeyId!,
+        secretAccessKey: secretAccessKey!,
+      });
+    }
+
+    if (requested === 'auto') {
+      this.logger.warn(
+        'R2 belum dikonfigurasi — memakai penyimpanan lokal (mode pengembangan). ' +
+          'Isi R2_* di .env untuk memakai Cloudflare R2.',
+      );
+    }
+    return new LocalDiskDriver(
+      this.config.get('STORAGE_LOCAL_DIR'),
+      this.config.get('PUBLIC_API_URL'),
+      this.signingSecret(),
+    );
   }
 
-  /** URL download sekali pakai, berumur pendek (detik dari config). */
+  /** Secret khusus penandatanganan URL, diturunkan dari JWT secret. */
+  private signingSecret(): string {
+    return createHmac('sha256', this.config.get('JWT_ACCESS_SECRET'))
+      .update('storage-url-signing')
+      .digest('hex');
+  }
+
+  /** Driver aktif — dipakai StorageController untuk mode lokal. */
+  get activeDriver(): StorageDriver {
+    return this.driver;
+  }
+
+  get localDriver(): LocalDiskDriver | null {
+    return this.driver instanceof LocalDiskDriver ? this.driver : null;
+  }
+
+  /** URL download berumur pendek (default 10 menit dari config). */
   async getDownloadUrl(
     storageKey: string,
     fileName?: string,
     ttlSeconds?: number,
   ): Promise<{ url: string; expiresAt: Date }> {
-    const ttl = ttlSeconds ?? this.config.get('DOWNLOAD_URL_TTL');
-    const cmd = new GetObjectCommand({
-      Bucket: this.bucket,
-      Key: storageKey,
-      ResponseContentDisposition: fileName
-        ? `attachment; filename="${encodeURIComponent(fileName)}"`
-        : undefined,
-    });
-    const url = await getSignedUrl(this.ensure(), cmd, { expiresIn: ttl });
-    return { url, expiresAt: new Date(Date.now() + ttl * 1000) };
+    return this.driver.getDownloadUrl(
+      storageKey,
+      fileName,
+      ttlSeconds ?? this.config.get('DOWNLOAD_URL_TTL'),
+    );
   }
 
-  /** Presigned PUT untuk upload langsung dari klien admin. */
+  /** URL upload (PUT) berumur pendek untuk klien admin/user. */
   async getUploadUrl(
     storageKey: string,
     contentType: string,
     ttlSeconds = 300,
   ): Promise<{ url: string; key: string }> {
-    const cmd = new PutObjectCommand({
-      Bucket: this.bucket,
-      Key: storageKey,
-      ContentType: contentType,
-    });
-    const url = await getSignedUrl(this.ensure(), cmd, {
-      expiresIn: ttlSeconds,
-    });
-    return { url, key: storageKey };
+    return this.driver.getUploadUrl(storageKey, contentType, ttlSeconds);
   }
 
   async delete(storageKey: string): Promise<void> {
-    await this.ensure().send(
-      new DeleteObjectCommand({ Bucket: this.bucket, Key: storageKey }),
-    );
+    await this.driver.delete(storageKey);
   }
 }

@@ -14,8 +14,14 @@ Topologi: **Vercel** (web) · **Railway** (api) · **Supabase** (Postgres) ·
 
 1. Buat bucket (mis. `digitemplate`), **privat**.
 2. Buat R2 API Token (Access Key ID + Secret).
-3. Isi env api: `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
+3. Isi env api: `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`,
+   lalu set `STORAGE_DRIVER=r2` agar API **gagal cepat** bila kredensial kurang
+   (mencegah diam-diam jatuh ke penyimpanan lokal).
 4. File produk & bukti transfer di-upload privat; akses hanya via signed URL.
+
+> Untuk pengembangan lokal, biarkan `R2_*` kosong: API otomatis memakai disk
+> lokal (`apps/api/.storage`) dengan signed URL berumur pendek. Lihat
+> `docs/troubleshooting.md` §2.
 
 ## 3. Backend — Railway
 
@@ -59,6 +65,9 @@ Karena web dan api beda subdomain, agar cookie HttpOnly terkirim:
 - [ ] Secret JWT diganti (acak, ≥ 32 char).
 - [ ] `COOKIE_SECURE=true`, domain benar.
 - [ ] Admin default diganti password / dinonaktifkan.
+- [ ] **`STORAGE_DRIVER=r2`** + `R2_*` terisi (jangan biarkan driver lokal aktif
+      di produksi — file tidak persisten & tidak terbagi antar instance).
+- [ ] `PUBLIC_API_URL` menunjuk URL API produksi.
 - [ ] Rate limit sesuai trafik.
 - [ ] Backup database terjadwal (lihat `operations.md`).
 - [ ] Monitoring/health check aktif (`/health/ready`).

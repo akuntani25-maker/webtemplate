@@ -59,7 +59,7 @@ Prinsip:
 | `AuthModule` | Register, login, refresh, logout, Argon2, JWT rotation. |
 | `UsersModule` | Profil, ganti password, role. |
 | `CatalogModule` | Products, Categories, Tags, Reviews. |
-| `MediaModule` | Upload thumbnail/gallery, generate signed URL (R2). |
+| `MediaModule` | Upload thumbnail/gallery, generate signed URL. Dua driver: **R2** (produksi) & **disk lokal** (pengembangan) di balik antarmuka `StorageDriver` yang sama — lihat §5.1. |
 | `CartOrderModule` | Cart, Order, Invoice, License. |
 | `PaymentModule` | PaymentProof, verifikasi admin, provider adapter. |
 | `CouponModule` | Validasi & penerapan kupon. |
@@ -96,6 +96,27 @@ Fase berikut cukup menambah `MidtransProvider` / `XenditProvider` tanpa mengubah
 - **AuthZ**: Role guard (`USER`/`ADMIN`), ownership check.
 - **Web**: Helmet, CORS allowlist, rate limiting (Throttler), CSRF token untuk mutasi cookie-based, input validation + sanitization, output encoding.
 - **Data**: Prisma parameterized queries (anti SQLi), signed URL privat, audit log.
+
+### 5.1 Object storage: dua driver, satu kontrak
+
+`StorageService` memilih driver lewat `STORAGE_DRIVER` (`auto` | `r2` | `local`):
+
+| Driver | Kapan | Mekanisme signed URL |
+|--------|-------|----------------------|
+| `R2Driver` | Produksi (kredensial R2 lengkap) | Presigned URL S3 → klien langsung ke Cloudflare. |
+| `LocalDiskDriver` | Pengembangan (R2 kosong) | URL ke endpoint API sendiri (`/storage/upload`, `/storage/download`) dilindungi **token HMAC-SHA256 berumur pendek**. |
+
+Properti keamanan identik pada kedua driver: file tidak dapat diakses tanpa URL
+bertanda tangan, TTL ditegakkan (download 10 menit), kuota 5×/lisensi tetap
+berlaku, dan object key divalidasi terhadap path traversal.
+
+Endpoint `/storage/*` ditandai `@Public()` karena **token itulah otentikasinya**
+(meniru semantik presigned URL, yang harus bisa dibuka tanpa cookie sesi).
+Saat driver R2 aktif, endpoint tersebut membalas 404 — tidak pernah dipakai.
+
+`LocalDiskDriver` tidak cocok untuk produksi multi-instance (penyimpanan tidak
+terbagi antar instance); API mencatat error bila driver ini aktif saat
+`NODE_ENV=production`.
 
 ## 6. Performa & Caching
 

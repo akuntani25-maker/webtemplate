@@ -42,3 +42,6 @@ coverage/
 *.local
 tmp/
 uploads/
+
+# Local object storage (driver dev)
+apps/api/.storage/

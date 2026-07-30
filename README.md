@@ -15,7 +15,7 @@ marketplace berskala besar.
 | Backend | NestJS · TypeScript · Prisma ORM |
 | Database | PostgreSQL (Supabase) |
 | Auth | JWT + Refresh Token (rotasi & reuse detection) · HttpOnly Cookie · Argon2id |
-| Storage | Cloudflare R2 (S3-compatible, privat, signed URL) |
+| Storage | Cloudflare R2 (privat, signed URL) — otomatis fallback ke **disk lokal** saat pengembangan, tanpa perlu akun Cloudflare |
 | Deploy | Vercel (web) · Railway (api) · Supabase (db) · Cloudflare (DNS/SSL) |
 | CI/CD | GitHub Actions |
 
@@ -86,7 +86,8 @@ npm install            # workspaces: api + web sekaligus
 ```bash
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env.local
-# Isi DATABASE_URL, JWT secrets, R2, dll.
+# Isi DATABASE_URL + JWT secrets. R2 boleh dibiarkan KOSONG untuk lokal:
+# penyimpanan otomatis memakai disk (apps/api/.storage) dengan signed URL.
 ```
 
 ### 3. Database

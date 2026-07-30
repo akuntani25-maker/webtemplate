@@ -1,0 +1,14 @@
+{
+  // Typecheck mencakup src + prisma/seed.ts (tanpa emit),
+  // sementara tsconfig.json dipakai untuk build (rootDir=src → dist/main.js).
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "./",
+    // Verifikasi harus selalu memeriksa ulang; tanpa cache agar tidak pernah
+    // memberi hasil hijau palsu, dan tidak menimpa buildinfo milik build.
+    "incremental": false
+  },
+  "include": ["src/**/*", "prisma/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

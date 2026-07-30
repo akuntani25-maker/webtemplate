@@ -24,6 +24,13 @@ export const envSchema = z.object({
     .default('false')
     .transform((v) => v === 'true'),
 
+  // URL publik API ini (dipakai untuk membangun signed URL driver lokal)
+  PUBLIC_API_URL: z.string().default('http://localhost:4000/api/v1'),
+
+  // auto = pakai R2 bila kredensial lengkap, jika tidak pakai disk lokal
+  STORAGE_DRIVER: z.enum(['auto', 'r2', 'local']).default('auto'),
+  STORAGE_LOCAL_DIR: z.string().default('.storage'),
+
   R2_ENDPOINT: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),
