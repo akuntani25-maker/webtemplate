@@ -61,7 +61,9 @@ export class StorageController {
     const local = this.requireLocal();
     const payload = token ? verifyStorageToken(token, this.secret()) : null;
     if (!payload || payload.m !== 'put') {
-      throw new BadRequestException('Token upload tidak valid atau kedaluwarsa');
+      throw new BadRequestException(
+        'Token upload tidak valid atau kedaluwarsa',
+      );
     }
 
     await local.writeStream(payload.k, req);

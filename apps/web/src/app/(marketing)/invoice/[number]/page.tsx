@@ -99,7 +99,11 @@ export default function InvoicePage({
         <h1 className="text-2xl font-bold">Invoice {invoice.order.number}</h1>
         <Badge
           variant={
-            isPaid ? 'success' : invoice.status === 'EXPIRED' ? 'danger' : 'warning'
+            isPaid
+              ? 'success'
+              : invoice.status === 'EXPIRED'
+                ? 'danger'
+                : 'warning'
           }
         >
           {invoice.status}

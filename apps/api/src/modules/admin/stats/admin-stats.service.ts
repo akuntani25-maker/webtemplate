@@ -38,7 +38,9 @@ export class AdminStatsService {
       this.prisma.db.order.count({ where: { status: 'PAID' } }),
       this.prisma.db.paymentProof.count({ where: { status: 'PENDING' } }),
       this.prisma.db.user.count(),
-      this.prisma.db.user.count({ where: { createdAt: { gte: startOfMonth } } }),
+      this.prisma.db.user.count({
+        where: { createdAt: { gte: startOfMonth } },
+      }),
       this.prisma.db.product.count({ where: { status: 'PUBLISHED' } }),
       this.prisma.db.downloadLog.count(),
     ]);

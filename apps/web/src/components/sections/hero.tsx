@@ -23,8 +23,8 @@ export function Hero() {
             <span className="text-primary">bisnis & produktivitas</span>
           </h1>
           <p className="mt-4 max-w-md text-muted-foreground">
-            Website, spreadsheet, Notion, Canva, invoice, dashboard, dan
-            banyak lagi. Beli sekali, unduh instan, langsung produktif.
+            Website, spreadsheet, Notion, Canva, invoice, dashboard, dan banyak
+            lagi. Beli sekali, unduh instan, langsung produktif.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">

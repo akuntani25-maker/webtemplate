@@ -36,8 +36,8 @@ export function Footer() {
         <div>
           <h3 className="font-bold text-lg">DigiTemplate</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Marketplace template digital profesional untuk mempercepat kerja
-            dan bisnis Anda.
+            Marketplace template digital profesional untuk mempercepat kerja dan
+            bisnis Anda.
           </p>
         </div>
         {COLUMNS.map((col) => (

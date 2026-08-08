@@ -23,7 +23,10 @@ export default function EditProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const q = useAdminQuery<ProductDetail>(['admin', 'product', id], `/admin/products/${id}`);
+  const q = useAdminQuery<ProductDetail>(
+    ['admin', 'product', id],
+    `/admin/products/${id}`,
+  );
   const p = q.data?.data;
 
   if (q.isLoading) return <p className="text-muted-foreground">Memuat…</p>;

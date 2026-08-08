@@ -105,7 +105,9 @@ export default function AdminCouponsPage() {
                   <TD className="font-mono font-medium">{c.code}</TD>
                   <TD>{c.type}</TD>
                   <TD>
-                    {c.type === 'PERCENT' ? `${c.value}%` : `Rp ${c.value.toLocaleString('id-ID')}`}
+                    {c.type === 'PERCENT'
+                      ? `${c.value}%`
+                      : `Rp ${c.value.toLocaleString('id-ID')}`}
                   </TD>
                   <TD>
                     {c.usedCount}
@@ -132,7 +134,10 @@ export default function AdminCouponsPage() {
               ))}
               {items.length === 0 && (
                 <TR>
-                  <TD className="py-10 text-center text-muted-foreground" colSpan={6}>
+                  <TD
+                    className="py-10 text-center text-muted-foreground"
+                    colSpan={6}
+                  >
                     {q.isLoading ? 'Memuat…' : 'Belum ada kupon.'}
                   </TD>
                 </TR>

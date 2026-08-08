@@ -25,9 +25,7 @@ export class AdminProductsService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
     const where: Prisma.ProductWhereInput = {
-      ...(query.q
-        ? { name: { contains: query.q, mode: 'insensitive' } }
-        : {}),
+      ...(query.q ? { name: { contains: query.q, mode: 'insensitive' } } : {}),
       ...(query.status ? { status: query.status as never } : {}),
     };
     const [items, total] = await Promise.all([
@@ -169,7 +167,11 @@ export class AdminProductsService {
   // --- File digital (privat) ---
 
   /** Presigned PUT untuk upload file produk langsung ke R2. */
-  async presignUpload(productId: string, fileName: string, contentType: string) {
+  async presignUpload(
+    productId: string,
+    fileName: string,
+    contentType: string,
+  ) {
     const product = await this.prisma.db.product.findUnique({
       where: { id: productId },
     });

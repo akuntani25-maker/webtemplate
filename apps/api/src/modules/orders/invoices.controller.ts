@@ -1,11 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import {
-  IsInt,
-  IsISO8601,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsInt, IsISO8601, IsOptional, IsString, Min } from 'class-validator';
 import { InvoicesService } from './invoices.service';
 import { CurrentUser, type AuthUser } from '../../common/decorators';
 

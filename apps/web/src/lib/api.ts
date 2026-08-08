@@ -28,7 +28,8 @@ api.interceptors.response.use(
       original._retry = true;
       try {
         refreshing =
-          refreshing ?? api.post('/auth/refresh').finally(() => {
+          refreshing ??
+          api.post('/auth/refresh').finally(() => {
             refreshing = null;
           });
         await refreshing;

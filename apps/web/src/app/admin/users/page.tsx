@@ -16,7 +16,10 @@ interface AdminUser {
 }
 
 export default function AdminUsersPage() {
-  const q = useAdminQuery<AdminUser[]>(['admin', 'users'], '/admin/users?limit=50');
+  const q = useAdminQuery<AdminUser[]>(
+    ['admin', 'users'],
+    '/admin/users?limit=50',
+  );
   const update = useAdminMutation({
     method: 'patch',
     path: (v: { id: string; role: string }) => `/admin/users/${v.id}`,
@@ -71,7 +74,10 @@ export default function AdminUsersPage() {
               ))}
               {items.length === 0 && (
                 <TR>
-                  <TD className="py-10 text-center text-muted-foreground" colSpan={5}>
+                  <TD
+                    className="py-10 text-center text-muted-foreground"
+                    colSpan={5}
+                  >
                     {q.isLoading ? 'Memuat…' : 'Belum ada user.'}
                   </TD>
                 </TR>

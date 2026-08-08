@@ -41,8 +41,7 @@ export default function DashboardPage() {
 
   const orders = useQuery({
     queryKey: ['me', 'orders'],
-    queryFn: async (): Promise<Order[]> =>
-      (await api.get('/orders')).data.data,
+    queryFn: async (): Promise<Order[]> => (await api.get('/orders')).data.data,
     enabled: !!user,
   });
   const licenses = useQuery({

@@ -22,10 +22,7 @@ export class AdminPaymentsController {
   }
 
   @Post(':proofId/approve')
-  approve(
-    @CurrentUser() admin: AuthUser,
-    @Param('proofId') proofId: string,
-  ) {
+  approve(@CurrentUser() admin: AuthUser, @Param('proofId') proofId: string) {
     return this.payments.approve(proofId, admin.sub);
   }
 

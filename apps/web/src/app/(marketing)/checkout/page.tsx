@@ -62,7 +62,10 @@ export default function CheckoutPage() {
     setLoading(true);
     try {
       const res = await api.post('/orders/checkout', {
-        items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
+        items: items.map((i) => ({
+          productId: i.productId,
+          quantity: i.quantity,
+        })),
         couponCode: couponCode || undefined,
         customerName: name || user.name,
         customerEmail: email || user.email,
@@ -73,7 +76,7 @@ export default function CheckoutPage() {
       router.push(`/invoice/${order.invoice.number}`);
     } catch (err: any) {
       const msg = err?.response?.data?.message;
-      setError(Array.isArray(msg) ? msg.join(', ') : msg ?? 'Checkout gagal');
+      setError(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Checkout gagal'));
     } finally {
       setLoading(false);
     }

@@ -150,10 +150,7 @@ export class AuthService {
     return this.toPublic(user);
   }
 
-  async changePassword(
-    userId: string,
-    dto: ChangePasswordDto,
-  ): Promise<void> {
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
     const user = await this.prisma.db.user.findUnique({
       where: { id: userId },
     });

@@ -27,7 +27,9 @@ export default function RegisterPage() {
       router.refresh();
     } catch (err: any) {
       const msg = err?.response?.data?.message;
-      setError(Array.isArray(msg) ? msg.join(', ') : msg ?? 'Pendaftaran gagal');
+      setError(
+        Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Pendaftaran gagal'),
+      );
     } finally {
       setLoading(false);
     }

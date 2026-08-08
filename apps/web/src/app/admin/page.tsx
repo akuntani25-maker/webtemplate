@@ -37,10 +37,9 @@ export default function AdminDashboard() {
     ['admin', 'overview'],
     '/admin/stats/overview',
   );
-  const sales = useAdminQuery<{ date: string; revenue: number; orders: number }[]>(
-    ['admin', 'sales'],
-    '/admin/stats/sales?range=30',
-  );
+  const sales = useAdminQuery<
+    { date: string; revenue: number; orders: number }[]
+  >(['admin', 'sales'], '/admin/stats/sales?range=30');
   const top = useAdminQuery<TopProduct[]>(
     ['admin', 'top'],
     '/admin/stats/top-products?limit=5',

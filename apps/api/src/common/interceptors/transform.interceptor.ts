@@ -17,9 +17,10 @@ export interface ApiResponse<T> {
  * Jika handler sudah mengembalikan `{ data, meta }`, biarkan apa adanya.
  */
 @Injectable()
-export class TransformInterceptor<T>
-  implements NestInterceptor<T, ApiResponse<T>>
-{
+export class TransformInterceptor<T> implements NestInterceptor<
+  T,
+  ApiResponse<T>
+> {
   intercept(
     _ctx: ExecutionContext,
     next: CallHandler,

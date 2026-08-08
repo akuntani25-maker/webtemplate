@@ -56,6 +56,7 @@ Topologi: **Vercel** (web) · **Railway** (api) · **Supabase** (Postgres) ·
 ## 6. Cookie lintas domain (penting)
 
 Karena web dan api beda subdomain, agar cookie HttpOnly terkirim:
+
 - `COOKIE_SECURE=true`, `SameSite` tetap `Strict` bila web & api satu domain induk;
   bila benar-benar cross-site, pertimbangkan `SameSite=None; Secure` dan CORS `credentials`.
 - CORS `WEB_ORIGIN` harus sama persis dengan origin frontend.

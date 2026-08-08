@@ -101,7 +101,10 @@ export default function AdminProductsPage() {
               ))}
               {items.length === 0 && (
                 <TR>
-                  <TD className="py-10 text-center text-muted-foreground" colSpan={7}>
+                  <TD
+                    className="py-10 text-center text-muted-foreground"
+                    colSpan={7}
+                  >
                     {q.isLoading ? 'Memuat…' : 'Belum ada produk.'}
                   </TD>
                 </TR>

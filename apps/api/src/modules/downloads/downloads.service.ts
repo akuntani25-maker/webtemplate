@@ -136,8 +136,7 @@ export class DownloadsService {
         url,
         expiresAt,
         fileName: file.fileName,
-        remaining:
-          license.maxDownloads - (license.downloadCount + 1),
+        remaining: license.maxDownloads - (license.downloadCount + 1),
       },
     };
   }

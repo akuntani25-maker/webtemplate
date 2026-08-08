@@ -48,29 +48,30 @@ Domain      → Entity/type & aturan invarian
 ```
 
 Prinsip:
+
 - **Dependency rule**: lapisan dalam tidak tahu lapisan luar.
 - **Repository pattern** membungkus Prisma agar mudah di-mock saat test & ditukar.
 - **DTO** memisahkan bentuk API dari bentuk DB.
 
 ## 3. Modul Backend (NestJS)
 
-| Modul | Tanggung jawab |
-|-------|----------------|
-| `AuthModule` | Register, login, refresh, logout, Argon2, JWT rotation. |
-| `UsersModule` | Profil, ganti password, role. |
-| `CatalogModule` | Products, Categories, Tags, Reviews. |
-| `MediaModule` | Upload thumbnail/gallery, generate signed URL. Dua driver: **R2** (produksi) & **disk lokal** (pengembangan) di balik antarmuka `StorageDriver` yang sama — lihat §5.1. |
-| `CartOrderModule` | Cart, Order, Invoice, License. |
-| `PaymentModule` | PaymentProof, verifikasi admin, provider adapter. |
-| `CouponModule` | Validasi & penerapan kupon. |
-| `DownloadModule` | Otorisasi & pembuatan signed URL berbatas waktu/kuota. |
-| `WishlistModule` | Simpan produk favorit. |
-| `BlogModule` | Post, kategori, tag, komentar. |
-| `ContentModule` | Banner, Testimonial, FAQ, SiteSetting, SEO meta. |
-| `AdminModule` | Agregasi dashboard & statistik. |
-| `NotificationModule` | Email + event. |
-| `AuditModule` | Audit log lintas aksi sensitif. |
-| `HealthModule` | Liveness/readiness. |
+| Modul                | Tanggung jawab                                                                                                                                                          |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AuthModule`         | Register, login, refresh, logout, Argon2, JWT rotation.                                                                                                                 |
+| `UsersModule`        | Profil, ganti password, role.                                                                                                                                           |
+| `CatalogModule`      | Products, Categories, Tags, Reviews.                                                                                                                                    |
+| `MediaModule`        | Upload thumbnail/gallery, generate signed URL. Dua driver: **R2** (produksi) & **disk lokal** (pengembangan) di balik antarmuka `StorageDriver` yang sama — lihat §5.1. |
+| `CartOrderModule`    | Cart, Order, Invoice, License.                                                                                                                                          |
+| `PaymentModule`      | PaymentProof, verifikasi admin, provider adapter.                                                                                                                       |
+| `CouponModule`       | Validasi & penerapan kupon.                                                                                                                                             |
+| `DownloadModule`     | Otorisasi & pembuatan signed URL berbatas waktu/kuota.                                                                                                                  |
+| `WishlistModule`     | Simpan produk favorit.                                                                                                                                                  |
+| `BlogModule`         | Post, kategori, tag, komentar.                                                                                                                                          |
+| `ContentModule`      | Banner, Testimonial, FAQ, SiteSetting, SEO meta.                                                                                                                        |
+| `AdminModule`        | Agregasi dashboard & statistik.                                                                                                                                         |
+| `NotificationModule` | Email + event.                                                                                                                                                          |
+| `AuditModule`        | Audit log lintas aksi sensitif.                                                                                                                                         |
+| `HealthModule`       | Liveness/readiness.                                                                                                                                                     |
 
 ## 4. Aliran Pembayaran (Provider-Agnostic)
 
@@ -101,10 +102,10 @@ Fase berikut cukup menambah `MidtransProvider` / `XenditProvider` tanpa mengubah
 
 `StorageService` memilih driver lewat `STORAGE_DRIVER` (`auto` | `r2` | `local`):
 
-| Driver | Kapan | Mekanisme signed URL |
-|--------|-------|----------------------|
-| `R2Driver` | Produksi (kredensial R2 lengkap) | Presigned URL S3 → klien langsung ke Cloudflare. |
-| `LocalDiskDriver` | Pengembangan (R2 kosong) | URL ke endpoint API sendiri (`/storage/upload`, `/storage/download`) dilindungi **token HMAC-SHA256 berumur pendek**. |
+| Driver            | Kapan                            | Mekanisme signed URL                                                                                                  |
+| ----------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `R2Driver`        | Produksi (kredensial R2 lengkap) | Presigned URL S3 → klien langsung ke Cloudflare.                                                                      |
+| `LocalDiskDriver` | Pengembangan (R2 kosong)         | URL ke endpoint API sendiri (`/storage/upload`, `/storage/download`) dilindungi **token HMAC-SHA256 berumur pendek**. |
 
 Properti keamanan identik pada kedua driver: file tidak dapat diakses tanpa URL
 bertanda tangan, TTL ditegakkan (download 10 menit), kuota 5×/lisensi tetap
@@ -120,15 +121,15 @@ terbagi antar instance); API mencatat error bila driver ini aktif saat
 
 ## 6. Performa & Caching
 
-| Teknik | Lokasi |
-|--------|--------|
-| SSR + ISR (revalidate) | Halaman produk & blog (Next.js) |
-| RSC + streaming | Home & listing |
-| HTTP cache / CDN | Vercel edge |
-| Query caching | TanStack Query (client), Cache-Control (API) |
-| Image optimization | `next/image`, format modern |
-| Code splitting & lazy | Dynamic import komponen berat |
-| DB index | Kolom filter/sort (lihat schema) |
+| Teknik                 | Lokasi                                       |
+| ---------------------- | -------------------------------------------- |
+| SSR + ISR (revalidate) | Halaman produk & blog (Next.js)              |
+| RSC + streaming        | Home & listing                               |
+| HTTP cache / CDN       | Vercel edge                                  |
+| Query caching          | TanStack Query (client), Cache-Control (API) |
+| Image optimization     | `next/image`, format modern                  |
+| Code splitting & lazy  | Dynamic import komponen berat                |
+| DB index               | Kolom filter/sort (lihat schema)             |
 
 ## 7. Observability
 

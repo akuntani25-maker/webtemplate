@@ -24,16 +24,16 @@ Ringkasan kontrol keamanan yang diterapkan dan cara kerjanya di kode.
 
 ## Perlindungan Web
 
-| Ancaman | Kontrol |
-|---------|---------|
-| Header/serangan umum | **Helmet** (`main.ts`) |
-| CORS | Allowlist origin + `credentials` (env `WEB_ORIGIN`) |
-| Brute force / abuse | **Throttler** global + limit ketat di `/auth/*` & `/downloads/*/sign` |
-| Input jahat | `ValidationPipe` global (`whitelist`, `forbidNonWhitelisted`, `transform`) + `class-validator` |
-| XSS (blog) | Sanitasi HTML (`sanitize-html`) sebelum simpan konten rich text |
-| SQL Injection | Prisma query terparametrisasi (tanpa string concat) |
-| Kebocoran error | `AllExceptionsFilter` menyembunyikan detail 5xx di produksi |
-| Enumerasi ID | **UUID** untuk semua PK |
+| Ancaman              | Kontrol                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| Header/serangan umum | **Helmet** (`main.ts`)                                                                         |
+| CORS                 | Allowlist origin + `credentials` (env `WEB_ORIGIN`)                                            |
+| Brute force / abuse  | **Throttler** global + limit ketat di `/auth/*` & `/downloads/*/sign`                          |
+| Input jahat          | `ValidationPipe` global (`whitelist`, `forbidNonWhitelisted`, `transform`) + `class-validator` |
+| XSS (blog)           | Sanitasi HTML (`sanitize-html`) sebelum simpan konten rich text                                |
+| SQL Injection        | Prisma query terparametrisasi (tanpa string concat)                                            |
+| Kebocoran error      | `AllExceptionsFilter` menyembunyikan detail 5xx di produksi                                    |
+| Enumerasi ID         | **UUID** untuk semua PK                                                                        |
 
 ## Data & File
 

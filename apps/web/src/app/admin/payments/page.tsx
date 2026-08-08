@@ -40,7 +40,10 @@ export default function AdminPaymentsPage() {
   const approve = useAdminMutation({
     method: 'post',
     path: (id: string) => `/admin/payments/${id}/approve`,
-    invalidate: [['admin', 'payments'], ['admin', 'overview']],
+    invalidate: [
+      ['admin', 'payments'],
+      ['admin', 'overview'],
+    ],
   });
   const reject = useAdminMutation({
     method: 'post',
@@ -114,8 +117,7 @@ export default function AdminPaymentsPage() {
                           onClick={() => {
                             const reason =
                               window.prompt('Alasan penolakan?') ?? '';
-                            if (reason)
-                              reject.mutate({ id: p.id, reason });
+                            if (reason) reject.mutate({ id: p.id, reason });
                           }}
                         >
                           <X className="h-4 w-4" /> Tolak
@@ -127,7 +129,10 @@ export default function AdminPaymentsPage() {
               ))}
               {proofs.length === 0 && (
                 <TR>
-                  <TD className="py-10 text-center text-muted-foreground" colSpan={6}>
+                  <TD
+                    className="py-10 text-center text-muted-foreground"
+                    colSpan={6}
+                  >
                     {q.isLoading ? 'Memuat…' : 'Tidak ada data.'}
                   </TD>
                 </TR>

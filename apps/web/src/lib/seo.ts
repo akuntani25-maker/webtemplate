@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import type { Product } from '@/types';
 import { formatIDR } from './utils';
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? 'DigiTemplate';
 
 /** Metadata dasar (Open Graph + Twitter Card) untuk sebuah halaman. */

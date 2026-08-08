@@ -19,7 +19,10 @@ interface Category {
 
 export default function AdminCategoriesPage() {
   const [name, setName] = useState('');
-  const q = useAdminQuery<Category[]>(['admin', 'categories'], '/admin/categories');
+  const q = useAdminQuery<Category[]>(
+    ['admin', 'categories'],
+    '/admin/categories',
+  );
   const create = useAdminMutation({
     method: 'post',
     path: () => '/admin/categories',
@@ -95,7 +98,10 @@ export default function AdminCategoriesPage() {
               ))}
               {items.length === 0 && (
                 <TR>
-                  <TD className="py-10 text-center text-muted-foreground" colSpan={5}>
+                  <TD
+                    className="py-10 text-center text-muted-foreground"
+                    colSpan={5}
+                  >
                     {q.isLoading ? 'Memuat…' : 'Belum ada kategori.'}
                   </TD>
                 </TR>

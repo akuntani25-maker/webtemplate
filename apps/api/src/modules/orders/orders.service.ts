@@ -151,7 +151,9 @@ export class OrdersService {
       include: {
         items: true,
         invoice: { include: { proofs: true } },
-        licenses: { include: { product: { select: { name: true, slug: true } } } },
+        licenses: {
+          include: { product: { select: { name: true, slug: true } } },
+        },
         coupon: { select: { code: true, type: true, value: true } },
       },
     });

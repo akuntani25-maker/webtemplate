@@ -6,8 +6,7 @@ import {
   Matches,
 } from 'class-validator';
 
-const PASSWORD_RULE =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/; // minimal ada huruf besar, kecil, angka
+const PASSWORD_RULE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/; // minimal ada huruf besar, kecil, angka
 
 export class RegisterDto {
   @IsEmail({}, { message: 'Email tidak valid' })

@@ -27,8 +27,8 @@ describe('TokenService', () => {
             store.set(data.tokenHash, row);
             return row;
           }),
-          findUnique: jest.fn(async ({ where }: any) =>
-            store.get(where.tokenHash) ?? null,
+          findUnique: jest.fn(
+            async ({ where }: any) => store.get(where.tokenHash) ?? null,
           ),
           update: jest.fn(async ({ where, data }: any) => {
             for (const row of store.values()) {

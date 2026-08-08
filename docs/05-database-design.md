@@ -11,35 +11,35 @@
 
 ## Ringkasan Tabel
 
-| Tabel | Fungsi |
-|-------|--------|
-| `User`, `RefreshToken`, `Address` | Identitas & sesi. |
-| `Category` | Kategori & subkategori (self relation). |
-| `Product`, `ProductImage`, `ProductFile`, `ProductFaq`, `ProductChangelog`, `Tag` | Katalog. |
-| `Order`, `OrderItem`, `Invoice`, `PaymentProof`, `License` | Transaksi & lisensi. |
-| `Coupon` | Diskon. |
-| `Review` | Ulasan produk. |
-| `WishlistItem` | Favorit. |
-| `DownloadLog` | Audit download & kuota. |
-| `BlogPost`, `BlogCategory`, `BlogTag`, `BlogComment` | Blog. |
-| `Banner`, `Testimonial`, `Faq`, `SiteSetting` | Konten & konfigurasi. |
-| `AuditLog` | Jejak aksi sensitif. |
+| Tabel                                                                             | Fungsi                                  |
+| --------------------------------------------------------------------------------- | --------------------------------------- |
+| `User`, `RefreshToken`, `Address`                                                 | Identitas & sesi.                       |
+| `Category`                                                                        | Kategori & subkategori (self relation). |
+| `Product`, `ProductImage`, `ProductFile`, `ProductFaq`, `ProductChangelog`, `Tag` | Katalog.                                |
+| `Order`, `OrderItem`, `Invoice`, `PaymentProof`, `License`                        | Transaksi & lisensi.                    |
+| `Coupon`                                                                          | Diskon.                                 |
+| `Review`                                                                          | Ulasan produk.                          |
+| `WishlistItem`                                                                    | Favorit.                                |
+| `DownloadLog`                                                                     | Audit download & kuota.                 |
+| `BlogPost`, `BlogCategory`, `BlogTag`, `BlogComment`                              | Blog.                                   |
+| `Banner`, `Testimonial`, `Faq`, `SiteSetting`                                     | Konten & konfigurasi.                   |
+| `AuditLog`                                                                        | Jejak aksi sensitif.                    |
 
 ## Enum
 
-| Enum | Nilai |
-|------|-------|
-| `Role` | `USER`, `ADMIN` |
-| `ProductStatus` | `DRAFT`, `PUBLISHED`, `ARCHIVED` |
-| `DemoType` | `WEBSITE`, `SPREADSHEET`, `EXCEL`, `CANVA`, `NOTION`, `PDF`, `IMAGE`, `OTHER` |
-| `OrderStatus` | `PENDING`, `WAITING_PAYMENT`, `PAID`, `CANCELLED`, `EXPIRED`, `REFUNDED` |
-| `InvoiceStatus` | `WAITING_PAYMENT`, `PAID`, `EXPIRED`, `CANCELLED` |
-| `PaymentMethod` | `MANUAL_TRANSFER`, `QRIS`, `GOPAY`, `OVO`, `DANA`, `SHOPEEPAY`, `BANK_TRANSFER` |
-| `PaymentProofStatus` | `PENDING`, `APPROVED`, `REJECTED` |
-| `CouponType` | `PERCENT`, `FIXED` |
-| `ReviewStatus` | `PENDING`, `PUBLISHED`, `REJECTED` |
-| `PostStatus` | `DRAFT`, `PUBLISHED` |
-| `CommentStatus` | `PENDING`, `APPROVED`, `SPAM` |
+| Enum                 | Nilai                                                                           |
+| -------------------- | ------------------------------------------------------------------------------- |
+| `Role`               | `USER`, `ADMIN`                                                                 |
+| `ProductStatus`      | `DRAFT`, `PUBLISHED`, `ARCHIVED`                                                |
+| `DemoType`           | `WEBSITE`, `SPREADSHEET`, `EXCEL`, `CANVA`, `NOTION`, `PDF`, `IMAGE`, `OTHER`   |
+| `OrderStatus`        | `PENDING`, `WAITING_PAYMENT`, `PAID`, `CANCELLED`, `EXPIRED`, `REFUNDED`        |
+| `InvoiceStatus`      | `WAITING_PAYMENT`, `PAID`, `EXPIRED`, `CANCELLED`                               |
+| `PaymentMethod`      | `MANUAL_TRANSFER`, `QRIS`, `GOPAY`, `OVO`, `DANA`, `SHOPEEPAY`, `BANK_TRANSFER` |
+| `PaymentProofStatus` | `PENDING`, `APPROVED`, `REJECTED`                                               |
+| `CouponType`         | `PERCENT`, `FIXED`                                                              |
+| `ReviewStatus`       | `PENDING`, `PUBLISHED`, `REJECTED`                                              |
+| `PostStatus`         | `DRAFT`, `PUBLISHED`                                                            |
+| `CommentStatus`      | `PENDING`, `APPROVED`, `SPAM`                                                   |
 
 ## Strategi Index (contoh)
 
@@ -55,5 +55,6 @@ Gunakan Prisma Migrate (`prisma migrate dev` untuk lokal, `prisma migrate deploy
 ## Soft Delete
 
 Diterapkan via **Prisma Client Extension** (`apps/api/src/database/soft-delete.extension.ts`) yang:
+
 1. Mengubah `delete`/`deleteMany` menjadi update `deletedAt = now()`.
 2. Menyisipkan filter `deletedAt: null` pada `find*`/`count` (kecuali query eksplisit menyertakan `deletedAt`).

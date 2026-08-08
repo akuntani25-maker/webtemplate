@@ -12,11 +12,7 @@ import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { TypedConfigService } from '../../config/typed-config.service';
-import {
-  RegisterDto,
-  LoginDto,
-  ChangePasswordDto,
-} from './dto/auth.dto';
+import { RegisterDto, LoginDto, ChangePasswordDto } from './dto/auth.dto';
 import {
   setAuthCookies,
   clearAuthCookies,
@@ -83,10 +79,7 @@ export class AuthController {
   @Public()
   @HttpCode(200)
   @Post('logout')
-  async logout(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const raw = (req.cookies as Record<string, string>)?.[REFRESH_COOKIE];
     await this.auth.logout(raw);
     clearAuthCookies(res, this.config);

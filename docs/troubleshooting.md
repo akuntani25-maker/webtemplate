@@ -13,7 +13,7 @@ error TS7006: Parameter 'e' implicitly has an 'any' type.
 ```
 
 **Penyebab.** Prisma Client **belum di-generate**. Paket `@prisma/client` yang
-terpasang dari npm hanyalah *stub*; seluruh tipe (enum `Role`/`DemoType`/…,
+terpasang dari npm hanyalah _stub_; seluruh tipe (enum `Role`/`DemoType`/…,
 `Prisma.*WhereInput`, `Prisma.sql`, tipe hasil query) baru dibuat saat
 `prisma generate` dijalankan terhadap `prisma/schema.prisma`. Karena tipe hasil
 query menjadi `any`, error `implicit any` (TS7006) ikut merembet — itu **akibat**,
@@ -55,11 +55,11 @@ ERROR [Exception] Object storage (R2) belum dikonfigurasi
 sehingga pengembangan lokal mustahil tanpa akun Cloudflare. Sekarang ada
 **dua driver** dan pemilihannya otomatis:
 
-| `STORAGE_DRIVER` | Perilaku |
-|------------------|----------|
+| `STORAGE_DRIVER` | Perilaku                                                                                                                                |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `auto` (default) | Pakai **R2** bila `R2_ENDPOINT` + `R2_ACCESS_KEY_ID` + `R2_SECRET_ACCESS_KEY` lengkap; jika belum → **disk lokal** + peringatan di log. |
-| `r2` | Wajib R2. Gagal saat start bila kredensial kurang — **pakai ini di produksi**. |
-| `local` | Paksa disk lokal (hanya pengembangan). |
+| `r2`             | Wajib R2. Gagal saat start bila kredensial kurang — **pakai ini di produksi**.                                                          |
+| `local`          | Paksa disk lokal (hanya pengembangan).                                                                                                  |
 
 Jadi untuk lokal cukup **tidak mengisi** `R2_*`. File tersimpan di
 `apps/api/.storage` (sudah masuk `.gitignore`).

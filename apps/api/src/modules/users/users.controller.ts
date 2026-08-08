@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Injectable,
-  Patch,
-} from '@nestjs/common';
+import { Body, Controller, Get, Injectable, Patch } from '@nestjs/common';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { PrismaService } from '../../database/prisma.service';
 import { CurrentUser, type AuthUser } from '../../common/decorators';
@@ -40,7 +34,13 @@ class UsersService {
     const user = await this.prisma.db.user.update({
       where: { id: userId },
       data: { name: dto.name, phone: dto.phone, avatarUrl: dto.avatarUrl },
-      select: { id: true, name: true, email: true, phone: true, avatarUrl: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        avatarUrl: true,
+      },
     });
     return { data: user };
   }

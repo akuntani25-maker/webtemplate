@@ -2,7 +2,13 @@
 
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, ShoppingBag, ShoppingCart, LayoutDashboard } from 'lucide-react';
+import {
+  Moon,
+  Sun,
+  ShoppingBag,
+  ShoppingCart,
+  LayoutDashboard,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';

@@ -46,7 +46,12 @@ describe('CouponsService.validate', () => {
 
   it('menolak bila di bawah minimal pembelian', async () => {
     const svc = new CouponsService(
-      prismaWith({ ...base, type: 'FIXED', value: 10_000, minPurchase: 100_000 }),
+      prismaWith({
+        ...base,
+        type: 'FIXED',
+        value: 10_000,
+        minPurchase: 100_000,
+      }),
     );
     await expect(svc.validate('HEMAT20', 50_000)).rejects.toBeInstanceOf(
       BadRequestException,

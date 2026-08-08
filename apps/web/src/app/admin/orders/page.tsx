@@ -27,7 +27,10 @@ const VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'muted'> = {
 };
 
 export default function AdminOrdersPage() {
-  const q = useAdminQuery<Order[]>(['admin', 'orders'], '/admin/orders?limit=50');
+  const q = useAdminQuery<Order[]>(
+    ['admin', 'orders'],
+    '/admin/orders?limit=50',
+  );
   const items = q.data?.data ?? [];
 
   return (
@@ -61,7 +64,10 @@ export default function AdminOrdersPage() {
               ))}
               {items.length === 0 && (
                 <TR>
-                  <TD className="py-10 text-center text-muted-foreground" colSpan={5}>
+                  <TD
+                    className="py-10 text-center text-muted-foreground"
+                    colSpan={5}
+                  >
                     {q.isLoading ? 'Memuat…' : 'Belum ada order.'}
                   </TD>
                 </TR>

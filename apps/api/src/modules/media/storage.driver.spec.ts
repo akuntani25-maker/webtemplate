@@ -83,11 +83,17 @@ describe('isSafeStorageKey', () => {
 describe('LocalDiskDriver', () => {
   it('menulis lalu membaca objek, dan menolak key berbahaya', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'storage-test-'));
-    const driver = new LocalDiskDriver(dir, 'http://localhost:4000/api/v1', SECRET);
+    const driver = new LocalDiskDriver(
+      dir,
+      'http://localhost:4000/api/v1',
+      SECRET,
+    );
 
     await driver.writeStream('proofs/x/bukti.txt', Readable.from(['halo']));
     expect(await driver.exists('proofs/x/bukti.txt')).toBe(true);
-    expect(await readFile(join(dir, 'proofs/x/bukti.txt'), 'utf8')).toBe('halo');
+    expect(await readFile(join(dir, 'proofs/x/bukti.txt'), 'utf8')).toBe(
+      'halo',
+    );
 
     expect(() => driver.resolvePath('../keluar.txt')).toThrow();
 
@@ -97,7 +103,11 @@ describe('LocalDiskDriver', () => {
 
   it('membuat URL upload & download yang mengandung token valid', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'storage-test-'));
-    const driver = new LocalDiskDriver(dir, 'http://localhost:4000/api/v1', SECRET);
+    const driver = new LocalDiskDriver(
+      dir,
+      'http://localhost:4000/api/v1',
+      SECRET,
+    );
 
     const up = await driver.getUploadUrl('proofs/x/a.png', 'image/png', 300);
     expect(up.url).toContain('/storage/upload?token=');

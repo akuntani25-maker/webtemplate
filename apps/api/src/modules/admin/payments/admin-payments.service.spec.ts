@@ -70,7 +70,9 @@ describe('AdminPaymentsService.approve', () => {
 
     expect(res.data.status).toBe('PAID');
     expect(tx.order.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ status: 'PAID' }) }),
+      expect.objectContaining({
+        data: expect.objectContaining({ status: 'PAID' }),
+      }),
     );
     expect(licensesCreated).toHaveLength(2);
     expect(licensesCreated[0]).toMatchObject({

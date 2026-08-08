@@ -127,13 +127,20 @@ export function ProductForm({
                 {...register('demoType')}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
               >
-                {['WEBSITE', 'SPREADSHEET', 'EXCEL', 'CANVA', 'NOTION', 'PDF', 'IMAGE', 'OTHER'].map(
-                  (t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ),
-                )}
+                {[
+                  'WEBSITE',
+                  'SPREADSHEET',
+                  'EXCEL',
+                  'CANVA',
+                  'NOTION',
+                  'PDF',
+                  'IMAGE',
+                  'OTHER',
+                ].map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
               </select>
             </Field>
             <Field label="URL demo" error={errors.demoUrl?.message}>
